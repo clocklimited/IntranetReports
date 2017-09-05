@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "emoji-name-map": "^1.2.4",
+    "horoscope": "^2.0.1",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.sortby": "^4.7.0",
+    "moment": "^2.18.1",
+    "pg": "^7.3.0"
+  }
+}
