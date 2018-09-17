@@ -30,19 +30,23 @@ const filterMonth = (employees, date, key) =>
     return employee
   }), 'day')
 
+const exclude = [ 7235, 7510, 5528 ]
+
 
 const go = async () => {
   await client.connect()
-  const query = `SELECT "Contacts"."FirstName", "Contacts"."LastName", "Contacts"."DateOfBirth", "Employees"."DateOfEmployement", "Employees"."LeavingDate" FROM "Employees" LEFT JOIN "Contacts" ON "Contacts"."Id" = "Employees"."ContactId" WHERE "LeavingDate" IS NULL OR "LeavingDate" > now()`
+  const query = `SELECT "Contacts"."Id", "Contacts"."FirstName", "Contacts"."LastName", "Contacts"."DateOfBirth", "Employees"."DateOfEmployement", "Employees"."LeavingDate" FROM "Employees" LEFT JOIN "Contacts" ON "Contacts"."Id" = "Employees"."ContactId" WHERE ("LeavingDate" IS NULL OR "LeavingDate" > now())`
   const res = await client.query(query)
 
-  const employees = res.rows.map(row => Object.keys(row).reduce((employee, key) => {
+  const employees = res.rows.filter(employee => !exclude.includes(Number(employee.Id))).map(row => Object.keys(row).reduce((employee, key) => {
       employee[camelCase(key)] = row[key]
       return employee
     }, {}))
 
+  console.log(employees.map(({ id, firstName, lastName }) => `${id} ${firstName} ${lastName}`).sort().join('\n'))
+
   let date = moment().add(-1, 'month').startOf('month')
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 6; i++) {
     const start = date
     const end = date.endOf('month')
     const birthdays = filterMonth(employees, start, 'dateOfBirth')
